@@ -49,6 +49,20 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      personService
+        .removePerson(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(error => {
+          alert(`Information of ${name} has already been removed from server`)
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
+  }
+
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(filter.toLowerCase())
   )
@@ -69,7 +83,7 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} onDelete={handleDelete} />
     </div>
   )
 }
