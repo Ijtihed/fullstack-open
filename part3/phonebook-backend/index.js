@@ -24,7 +24,18 @@ let persons = [
   }
 ];
 
+const requestLogger = (req, res, next) => {
+  console.log('Method:', req.method);
+  console.log('Path:  ', req.path);
+  if (req.method === 'POST') {
+    console.log('Body:  ', req.body);
+  }
+  console.log('---');
+  next();
+};
+
 app.use(express.json())
+app.use(requestLogger);
 
 app.get('/api/persons', (req, res) => {
   res.json(persons);
