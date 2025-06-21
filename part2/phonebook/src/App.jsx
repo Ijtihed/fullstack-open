@@ -20,6 +20,7 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+
     const nameExists = persons.some(person => person.name === newName)
     if (nameExists) {
       alert(`${newName} is already added to phonebook`)
@@ -28,12 +29,16 @@ const App = () => {
 
     const newPerson = {
       name: newName,
-      number: newNumber
+      number: newNumber,
     }
 
-    setPersons(persons.concat(newPerson))
-    setNewName('')
-    setNewNumber('')
+    axios
+      .post('http://localhost:3001/persons', newPerson)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleNameChange = (event) => {
