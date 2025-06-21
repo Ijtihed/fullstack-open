@@ -68,8 +68,12 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(() => {
-      res.status(204).end();
+    .then(result => {
+      if (result) {
+        res.status(204).end();
+      } else {
+        res.status(404).json({ error: 'person not found' });
+      }
     })
     .catch(error => next(error));
 });
