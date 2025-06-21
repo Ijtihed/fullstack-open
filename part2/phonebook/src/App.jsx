@@ -31,13 +31,23 @@ const App = () => {
             setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson))
             setNewName('')
             setNewNumber('')
-            setMessage(`Updated ${returnedPerson.name}`)
+            setMessage({
+              text: `Updated ${returnedPerson.name}`,
+              type: 'success'
+            })
             setTimeout(() => {
               setMessage(null)
             }, 5000)
           })
           .catch(error => {
-            alert(`Failed to update ${newName}`)
+            setMessage({
+              text: `Information of ${existingPerson.name} has already been removed from server`,
+              type: 'error'
+            })
+            setPersons(persons.filter(p => p.id !== existingPerson.id))
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
           })
       }
       return
@@ -52,7 +62,10 @@ const App = () => {
       setPersons(persons.concat(returnedPerson))
       setNewName('')
       setNewNumber('')
-      setMessage(`Added ${returnedPerson.name}`)
+      setMessage({
+        text: `Added ${returnedPerson.name}`,
+        type: 'success'
+      })
       setTimeout(() => {
         setMessage(null)
       }, 5000)
