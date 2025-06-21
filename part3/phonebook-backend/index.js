@@ -34,7 +34,11 @@ app.use(requestLogger);
 
 app.get('/api/persons', (req, res) => {
   Person.find({}).then(persons => {
-    res.json(persons);
+    res.json(persons.map(p => ({
+      name: p.name,
+      number: p.number,
+      id: p._id.toString()
+    })));
   });
 });
 
