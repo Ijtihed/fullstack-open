@@ -4,6 +4,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import Notification from './components/Notification'
+import CountrySearch from './components/CountrySearch'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -107,6 +108,8 @@ const App = () => {
       <h2>Phonebook</h2>
 
       <Notification message={message} />
+
+      <CountrySearch />
 
       <Filter value={filter} onChange={handleFilterChange} />
 
