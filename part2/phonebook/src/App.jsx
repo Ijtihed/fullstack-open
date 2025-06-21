@@ -8,6 +8,12 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    // Check if name already exists
+    const nameExists = persons.some(person => person.name === newName)
+    if (nameExists) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
     const nameObject = { name: newName }
     setPersons(persons.concat(nameObject))
     setNewName('')
