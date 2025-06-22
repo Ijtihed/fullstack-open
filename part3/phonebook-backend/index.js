@@ -74,7 +74,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
   }
 
   console.log('Deleting ID:', id);
-  Person.findByIdAndRemove(id)
+  Person.findByIdAndDelete(id)
     .then(result => {
       if (result) {
         res.status(204).end();
