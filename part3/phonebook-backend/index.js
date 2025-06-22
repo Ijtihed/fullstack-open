@@ -23,7 +23,7 @@ mongoose.connect(url)
 const requestLogger = (req, res, next) => {
   console.log('Method:', req.method);
   console.log('Path:  ', req.path);
-  if (req.method === 'POST') {
+  if (['POST', 'DELETE'].includes(req.method)) {
     console.log('Body:  ', req.body);
   }
   console.log('---');
