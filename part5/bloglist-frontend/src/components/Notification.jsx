@@ -6,11 +6,12 @@ const Notification = ({ message }) => {
   const style = {
     border: '1px solid',
     padding: 10,
-    marginBottom: 10
+    marginBottom: 10,
+    color: 'red'
   }
 
   return (
-    <div style={style}>
+    <div style={style} className="error">
       {message}
     </div>
   )

@@ -10,6 +10,7 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [showLogin, setShowLogin] = useState(false)
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
 
@@ -39,6 +40,7 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      setShowLogin(false)
     } catch (error) {
       setMessage('wrong credentials')
       setTimeout(() => setMessage(null), 5000)
@@ -53,6 +55,7 @@ const App = () => {
   const addBlog = async (blogObject) => {
     try {
       const returnedBlog = await blogService.create(blogObject)
+      returnedBlog.user = user
       setBlogs(blogs.concat(returnedBlog))
       blogFormRef.current.toggleVisibility()
       setMessage(`a new blog ${returnedBlog.title} added`)
@@ -99,6 +102,7 @@ const App = () => {
           type="text"
           value={username}
           name="Username"
+          data-testid="username"
           onChange={({ target }) => setUsername(target.value)}
         />
       </div>
@@ -108,16 +112,18 @@ const App = () => {
           type="password"
           value={password}
           name="Password"
+          data-testid="password"
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
       <button type="submit">login</button>
+      <button type="button" onClick={() => setShowLogin(false)}>cancel</button>
     </form>
   )
 
   const blogList = () => (
     <div>
-      <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+      <p>{user.username} logged in <button onClick={handleLogout}>logout</button></p>
 
       <Togglable buttonLabel="new blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
@@ -142,7 +148,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification message={message} />
-      {user === null ? loginForm() : blogList()}
+      {user === null ? (showLogin ? loginForm() : <button onClick={() => setShowLogin(true)}>log in</button>) : blogList()}
     </div>
   )
 }

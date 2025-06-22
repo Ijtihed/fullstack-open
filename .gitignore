@@ -1,3 +1,9 @@
 part3/phonebook-backend/.env
 part2/phonebook/.env
 part4/bloglist-backend/.env
+part1/node_modules/
+part2/node_modules/
+part3/node_modules/
+part4/node_modules/
+part5/node_modules/
+test-results/
