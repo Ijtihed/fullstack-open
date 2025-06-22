@@ -6,6 +6,8 @@ const config = require('./utils/config')
 const logger = require('./utils/logger')
 
 const blogsRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
 const middleware = require('./utils/middleware')
 
 const app = express()
@@ -13,6 +15,9 @@ const app = express()
 // middleware
 app.use(cors())
 app.use(express.json())
+
+// extract token from Authorization header for every request
+app.use(middleware.tokenExtractor)
 
 // ---------- DB connection ---------------
 mongoose.set('strictQuery', false)
@@ -24,6 +29,8 @@ mongoose.connect(config.MONGODB_URI)
 
 // routes
 app.use('/api/blogs', blogsRouter)
+app.use('/api/users', usersRouter)
+app.use('/api/login', loginRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
