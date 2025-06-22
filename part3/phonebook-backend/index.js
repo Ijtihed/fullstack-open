@@ -67,6 +67,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 });
 
 app.delete('/api/persons/:id', (req, res, next) => {
+  console.log('Deleting ID:', req.params.id);
   Person.findByIdAndRemove(req.params.id)
     .then(result => {
       if (result) {
