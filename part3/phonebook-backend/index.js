@@ -67,8 +67,14 @@ app.get('/api/persons/:id', (req, res, next) => {
 });
 
 app.delete('/api/persons/:id', (req, res, next) => {
-  console.log('Deleting ID:', req.params.id);
-  Person.findByIdAndRemove(req.params.id)
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'malformatted id' });
+  }
+
+  console.log('Deleting ID:', id);
+  Person.findByIdAndRemove(id)
     .then(result => {
       if (result) {
         res.status(204).end();
