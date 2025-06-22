@@ -5,4 +5,12 @@ const personSchema = new mongoose.Schema({
   number: String
 });
 
+personSchema.set('toJSON', {
+  transform: (_doc, ret) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    delete ret.__v;
+  },
+});
+
 module.exports = mongoose.model('Person', personSchema);

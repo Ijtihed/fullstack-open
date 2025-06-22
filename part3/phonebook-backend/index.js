@@ -85,6 +85,24 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error));
 });
 
+app.put('/api/persons/:id', (req, res, next) => {
+  const { number } = req.body;
+
+  Person.findByIdAndUpdate(
+    req.params.id,
+    { number },
+    { new: true, runValidators: true, context: 'query' }
+  )
+    .then(updatedPerson => {
+      if (updatedPerson) {
+        res.json(updatedPerson);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch(error => next(error));
+});
+
 app.post('/api/persons', (req, res, next) => {
   const body = req.body;
 
@@ -103,6 +121,24 @@ app.post('/api/persons', (req, res, next) => {
     })
     .catch(error => next(error));
 });
+
+// unknown endpoint handler
+app.use((req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' });
+});
+
+// centralized error handler
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({ error: 'malformatted id' });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
