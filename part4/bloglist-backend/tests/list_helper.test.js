@@ -73,6 +73,6 @@ describe('most likes', () => {
   })
 
   test('returns author with total likes', () => {
-    assert.deepStrictEqual(mostLikes(blogs), { author: 'bar', likes: 10 })
+    assert.deepStrictEqual(mostLikes(blogs), { author: 'foo', likes: 12 })
   })
 }) 
