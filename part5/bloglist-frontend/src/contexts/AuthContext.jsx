@@ -1,4 +1,5 @@
 import { createContext, useContext, useReducer } from 'react'
+import blogService from '../services/blogs'
 
 const AuthContext = createContext()
 
@@ -33,6 +34,7 @@ export const useAuth = () => {
 
   const clearUser = () => {
     window.localStorage.removeItem('loggedBlogappUser')
+    blogService.setToken(null)
     dispatch({ type: 'CLEAR' })
   }
 

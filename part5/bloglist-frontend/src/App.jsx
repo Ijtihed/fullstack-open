@@ -1,9 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Routes, Route } from 'react-router-dom'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import Nav from './components/Nav'
+import Users from './pages/Users'
+import UserDetail from './pages/UserDetail'
+import BlogDetail from './pages/BlogDetail'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import { useAuth } from './contexts/AuthContext'
@@ -40,24 +45,6 @@ const App = () => {
     },
   })
 
-  const likeBlogMutation = useMutation(({ id, updated }) => blogService.updateLikes(id, updated), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['blogs'])
-    },
-    onError: () => {
-      setNotification('failed to like blog')
-    },
-  })
-
-  const deleteBlogMutation = useMutation(blogService.remove, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['blogs'])
-    },
-    onError: () => {
-      setNotification('failed to remove blog')
-    },
-  })
-
   const handleLogin = async event => {
     event.preventDefault()
     try {
@@ -80,16 +67,6 @@ const App = () => {
     createBlogMutation.mutate(blogObject)
   }
 
-  const handleLike = blog => {
-    likeBlogMutation.mutate({ id: blog.id, updated: { ...blog, likes: blog.likes + 1, user: blog.user.id } })
-  }
-
-  const handleRemove = blog => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      deleteBlogMutation.mutate(blog.id)
-    }
-  }
-
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -107,7 +84,7 @@ const App = () => {
     </form>
   )
 
-  const blogList = () => (
+  const BlogList = () => (
     <div>
       <p>
         {user.username} logged in <button onClick={handleLogout}>logout</button>
@@ -121,16 +98,25 @@ const App = () => {
         .slice()
         .sort((a, b) => b.likes - a.likes)
         .map(blog => (
-          <Blog key={blog.id} blog={blog} user={user} like={() => handleLike(blog)} handleRemove={() => handleRemove(blog)} />
+          <Blog key={blog.id} blog={blog} />
         ))}
     </div>
   )
 
   return (
     <div>
-      <h2>blogs</h2>
+      <Nav />
+      <h2>Blog App</h2>
       <Notification />
-      {user === null ? (showLogin ? loginForm() : <button onClick={() => setShowLogin(true)}>log in</button>) : blogList()}
+      <Routes>
+        <Route
+          path="/"
+          element={user === null ? (showLogin ? loginForm() : <button onClick={() => setShowLogin(true)}>log in</button>) : <BlogList />}
+        />
+        <Route path="/users" element={<Users />} />
+        <Route path="/users/:id" element={<UserDetail />} />
+        <Route path="/blogs/:id" element={<BlogDetail />} />
+      </Routes>
     </div>
   )
 }
