@@ -1,30 +1,50 @@
-import { useDispatch, useSelector } from 'react-redux'
-import { voteAnecdote } from '../reducers/anecdoteReducer'
-import { setTimedNotification } from '../helpers/notificationActions'
+import { useSelector } from 'react-redux'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { getAll, voteAnecdote } from '../requests'
+import { useNotification } from '../NotificationContext'
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector(({ anecdotes, filter }) => {
+  const queryClient = useQueryClient()
+  const notify = useNotification()
+
+  const { data: anecdotes = [] } = useQuery({
+    queryKey: ['anecdotes'],
+    queryFn: getAll,
+  })
+
+  const filter = useSelector((state) => state.filter)
+
+  const voteMutation = useMutation({
+    mutationFn: voteAnecdote,
+    onSuccess: (updated) => {
+      const anecdotes = queryClient.getQueryData(['anecdotes']) || []
+      queryClient.setQueryData(
+        ['anecdotes'],
+        anecdotes.map((a) => (a.id === updated.id ? updated : a))
+      )
+    },
+  })
+
+  const handleVote = (anec) => {
+    voteMutation.mutate(anec)
+    notify(`you voted '${anec.content}'`, 5)
+  }
+
+  const shown = (() => {
     const normalized = filter.trim().toLowerCase()
-    const shown = normalized
+    return normalized
       ? anecdotes.filter((a) => a.content.toLowerCase().includes(normalized))
       : anecdotes
-    return [...shown].sort((a, b) => b.votes - a.votes)
-  })
-  const dispatch = useDispatch()
-
-  const vote = (id, content) => {
-    dispatch(voteAnecdote(id))
-    dispatch(setTimedNotification(`you voted '${content}'`, 5))
-  }
+  })().sort((a, b) => b.votes - a.votes)
 
   return (
     <div>
-      {anecdotes.map(anecdote => (
+      {shown.map((anecdote) => (
         <div key={anecdote.id} style={{ marginBottom: 8 }}>
           <div>{anecdote.content}</div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id, anecdote.content)} style={{ marginLeft: 8 }}>
+            <button onClick={() => handleVote(anecdote)} style={{ marginLeft: 8 }}>
               vote
             </button>
           </div>

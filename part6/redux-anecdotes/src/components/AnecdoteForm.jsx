@@ -1,20 +1,31 @@
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { createAnecdote } from '../reducers/anecdoteReducer'
-import { setTimedNotification } from '../helpers/notificationActions'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createNew } from '../requests'
+import { useNotification } from '../NotificationContext'
 
 const AnecdoteForm = () => {
   const [content, setContent] = useState('')
-  const dispatch = useDispatch()
+  const queryClient = useQueryClient()
+  const notify = useNotification()
+
+  const newAnecdoteMutation = useMutation({
+    mutationFn: createNew,
+    onSuccess: (newAnec) => {
+      const anecdotes = queryClient.getQueryData(['anecdotes']) || []
+      queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnec))
+    },
+  })
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (content.trim()) {
-      const trimmed = content.trim()
-      dispatch(createAnecdote(trimmed))
-      dispatch(setTimedNotification(`you added '${trimmed}'`, 5))
-      setContent('')
+    if (content.trim().length < 5) {
+      notify('anecdote must be at least 5 characters', 5)
+      return
     }
+    const trimmed = content.trim()
+    newAnecdoteMutation.mutate(trimmed)
+    notify(`you added '${trimmed}'`, 5)
+    setContent('')
   }
 
   return (

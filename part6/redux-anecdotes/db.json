@@ -2,7 +2,7 @@
   "anecdotes": [
     {
       "content": "If it hurts, do it more often",
-      "votes": 0,
+      "votes": 1,
       "id": "1"
     },
     {
@@ -14,6 +14,21 @@
       "id": "dd8a",
       "content": "Redux saves state",
       "votes": 3
+    },
+    {
+      "id": "4ff0",
+      "content": "acv",
+      "votes": 0
+    },
+    {
+      "id": "1668",
+      "content": "abc",
+      "votes": 1
+    },
+    {
+      "id": "dfe2",
+      "content": "React Query is awesome",
+      "votes": 1
     }
   ]
 }
