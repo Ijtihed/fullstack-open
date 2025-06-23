@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import Anecdote from './components/Anecdote'
+import { useField } from './hooks'
 
 const Menu = () => {
   const padding = { paddingRight: 5 }
@@ -51,20 +52,32 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const { reset: resetContent, ...content } = useField('text')
+  const { reset: resetAuthor, ...author } = useField('text')
+  const { reset: resetInfo, ...info } = useField('text')
   const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (content.value.trim().length < 5) {
+      props.setNotification('anecdote must be at least 5 characters')
+      setTimeout(() => props.setNotification(''), 5000)
+      return
+    }
+
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
     navigate('/')
+  }
+
+  const handleReset = () => {
+    resetContent()
+    resetAuthor()
+    resetInfo()
   }
 
   return (
@@ -73,17 +86,18 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          <input {...content} name='content' />
         </div>
         <div>
           author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <input {...author} name='author' />
         </div>
         <div>
           url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+          <input {...info} name='info' />
         </div>
         <button>create</button>
+        <button type='button' onClick={handleReset}>reset</button>
       </form>
     </div>
   )
@@ -130,7 +144,7 @@ const App = () => {
           path='/anecdotes/:id'
           element={<Anecdote anecdotes={anecdotes} />}
         />
-        <Route path='/create' element={<CreateNew addNew={addNew} />} />
+        <Route path='/create' element={<CreateNew addNew={addNew} setNotification={setNotification} />} />
         <Route path='/about' element={<About />} />
         <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
       </Routes>
