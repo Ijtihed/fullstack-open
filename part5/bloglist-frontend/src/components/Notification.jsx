@@ -1,5 +1,9 @@
-const Notification = ({ message }) => {
-  if (message === null) {
+import { useNotification } from '../contexts/NotificationContext'
+
+const Notification = () => {
+  const { notification } = useNotification()
+
+  if (notification === null) {
     return null
   }
 
@@ -12,7 +16,7 @@ const Notification = ({ message }) => {
 
   return (
     <div style={style} className="error">
-      {message}
+      {notification}
     </div>
   )
 }
